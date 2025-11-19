@@ -2,18 +2,22 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane, MapPin, Clock, Shield } from 'lucide-react';
 import BookingInterface from '@/components/BookingInterface';
+import Navbar from '@/components/Navbar';
 
 const Index = () => {
   const [showBooking, setShowBooking] = useState(false);
 
   if (showBooking) {
-    return <BookingInterface />;
+    return <BookingInterface onBack={() => setShowBooking(false)} />;
   }
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <Navbar onBookNow={() => setShowBooking(true)} />
+
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-accent">
+      <div id="home" className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-accent">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptMCAyYy0yLjIxIDAtNCAxLjc5LTQgNHMxLjc5IDQgNCA0IDQtMS43OSA0LTQtMS43OS00LTQtNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -56,7 +60,7 @@ const Index = () => {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Why Choose Flying Taxis?
@@ -99,6 +103,80 @@ const Index = () => {
               Advanced AI-powered navigation ensures maximum safety on every flight.
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div id="how-it-works" className="bg-muted/30 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              How It Works
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Book your flying taxi in four simple steps
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-8">
+            {[
+              { step: '01', title: 'Select Locations', description: 'Choose pickup and destination points on the map' },
+              { step: '02', title: 'Choose Tier', description: 'Pick from Standard, Premium, or Luxury options' },
+              { step: '03', title: 'Confirm Fare', description: 'Review distance-based pricing and details' },
+              { step: '04', title: 'Fly Away', description: 'Your autonomous taxi arrives and takes you to your destination' },
+            ].map((item, index) => (
+              <div key={index} className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 text-accent font-bold text-2xl mb-4">
+                  {item.step}
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Section */}
+      <div id="pricing" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Transparent Pricing
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Simple, distance-based fares with no hidden charges
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {[
+            { name: 'Standard', base: '₹150', perKm: '₹25/km', features: ['2 passengers', 'Comfortable seating', 'Standard speed'] },
+            { name: 'Premium', base: '₹250', perKm: '₹35/km', features: ['3 passengers', 'Extra comfort', 'Priority routing'], highlighted: true },
+            { name: 'Luxury', base: '₹500', perKm: '₹50/km', features: ['4 passengers', 'First-class experience', 'Fastest routes'] },
+          ].map((tier, index) => (
+            <div
+              key={index}
+              className={`p-6 rounded-xl border ${
+                tier.highlighted
+                  ? 'border-accent bg-accent/5 shadow-lg scale-105'
+                  : 'border-border bg-card'
+              }`}
+            >
+              <h3 className="text-xl font-bold text-foreground mb-2">{tier.name}</h3>
+              <div className="mb-4">
+                <div className="text-3xl font-bold text-accent">{tier.base}</div>
+                <div className="text-sm text-muted-foreground">base + {tier.perKm}</div>
+              </div>
+              <ul className="space-y-2">
+                {tier.features.map((feature, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
 

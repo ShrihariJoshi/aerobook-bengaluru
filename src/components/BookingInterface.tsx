@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaf
 import { Icon, LatLng } from 'leaflet';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MapPin, Navigation, Plane, Check } from 'lucide-react';
+import { MapPin, Navigation, Plane, Check, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import TaxiTierCard from './TaxiTierCard';
 import BookingConfirmation from './BookingConfirmation';
@@ -69,7 +69,11 @@ function LocationMarker({ onLocationSelect }: { onLocationSelect: (latlng: LatLn
   return null;
 }
 
-const BookingInterface = () => {
+interface BookingInterfaceProps {
+  onBack?: () => void;
+}
+
+const BookingInterface = ({ onBack }: BookingInterfaceProps) => {
   const [pickupLocation, setPickupLocation] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<LatLng | null>(null);
   const [selectedTier, setSelectedTier] = useState<TaxiTier | null>(null);
@@ -92,7 +96,7 @@ const BookingInterface = () => {
 
   useEffect(() => {
     if (pickupLocation && destination) {
-      const calculatedDistance = pickupLocation.distanceTo(destination) / 1000; // Convert to km
+      const calculatedDistance = pickupLocation.distanceTo(destination) / 1000;
       setDistance(calculatedDistance);
     }
   }, [pickupLocation, destination]);
@@ -124,6 +128,14 @@ const BookingInterface = () => {
     setShowConfirmation(false);
   };
 
+  const handleBackClick = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      handleNewBooking();
+    }
+  };
+
   if (showConfirmation && pickupLocation && destination && selectedTier) {
     return (
       <BookingConfirmation
@@ -138,143 +150,171 @@ const BookingInterface = () => {
   }
 
   return (
-    <div className="flex h-screen">
-      {/* Map Section */}
-      <div className="flex-1 relative">
-        <MapContainer
-          center={BENGALURU_CENTER}
-          zoom={12}
-          className="h-full w-full"
-          zoomControl={true}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <LocationMarker onLocationSelect={handleLocationSelect} />
-          
-          {pickupLocation && (
-            <Marker position={pickupLocation}>
-              <Popup>Pickup Location</Popup>
-            </Marker>
-          )}
-          
-          {destination && (
-            <Marker position={destination}>
-              <Popup>Destination</Popup>
-            </Marker>
-          )}
-        </MapContainer>
-
-        {/* Step Indicator Overlay */}
-        <div className="absolute top-6 left-6 z-[1000]">
-          <Card className="p-4 bg-card/95 backdrop-blur-sm border-border shadow-lg">
-            <div className="flex items-center gap-3">
-              {step === 'pickup' && (
-                <>
-                  <MapPin className="h-5 w-5 text-accent animate-pulse" />
-                  <span className="font-medium">Select pickup location on map</span>
-                </>
-              )}
-              {step === 'destination' && (
-                <>
-                  <Navigation className="h-5 w-5 text-accent animate-pulse" />
-                  <span className="font-medium">Select destination on map</span>
-                </>
-              )}
-              {step === 'tier' && (
-                <>
-                  <Plane className="h-5 w-5 text-accent" />
-                  <span className="font-medium">Choose your taxi tier</span>
-                </>
-              )}
-              {step === 'confirm' && (
-                <>
-                  <Check className="h-5 w-5 text-accent" />
-                  <span className="font-medium">Review and confirm</span>
-                </>
-              )}
+    <div className="flex flex-col h-screen">
+      {/* Simple Header */}
+      <div className="border-b border-border bg-background px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBackClick}
+            className="hover:bg-muted"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
+              <Plane className="h-5 w-5 text-primary-foreground" />
             </div>
-          </Card>
+            <div>
+              <span className="text-sm font-bold text-foreground">SkyTaxi</span>
+              <span className="text-xs text-muted-foreground ml-1">Bengaluru</span>
+            </div>
+          </div>
+        </div>
+        <div className="text-sm font-medium text-muted-foreground">
+          New Booking
         </div>
       </div>
 
-      {/* Sidebar Section */}
-      <div className="w-[400px] bg-card border-l border-border overflow-y-auto">
-        <div className="p-6 space-y-6">
-          {/* Header */}
-          <div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">Book Your Flight</h2>
-            <p className="text-muted-foreground">Skip the traffic, soar above Bengaluru</p>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Map Section */}
+        <div className="flex-1 relative">
+          <MapContainer
+            center={BENGALURU_CENTER}
+            zoom={12}
+            className="h-full w-full"
+            zoomControl={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <LocationMarker onLocationSelect={handleLocationSelect} />
+            
+            {pickupLocation && (
+              <Marker position={pickupLocation}>
+                <Popup>Pickup Location</Popup>
+              </Marker>
+            )}
+            
+            {destination && (
+              <Marker position={destination}>
+                <Popup>Destination</Popup>
+              </Marker>
+            )}
+          </MapContainer>
+
+          {/* Step Indicator Overlay */}
+          <div className="absolute top-6 left-6 z-[1000]">
+            <Card className="p-4 bg-card/95 backdrop-blur-sm border-border shadow-lg">
+              <div className="flex items-center gap-3">
+                {step === 'pickup' && (
+                  <>
+                    <MapPin className="h-5 w-5 text-accent animate-pulse" />
+                    <span className="font-medium">Select pickup location on map</span>
+                  </>
+                )}
+                {step === 'destination' && (
+                  <>
+                    <Navigation className="h-5 w-5 text-accent animate-pulse" />
+                    <span className="font-medium">Select destination on map</span>
+                  </>
+                )}
+                {step === 'tier' && (
+                  <>
+                    <Plane className="h-5 w-5 text-accent" />
+                    <span className="font-medium">Choose your taxi tier</span>
+                  </>
+                )}
+                {step === 'confirm' && (
+                  <>
+                    <Check className="h-5 w-5 text-accent" />
+                    <span className="font-medium">Review and confirm</span>
+                  </>
+                )}
+              </div>
+            </Card>
           </div>
+        </div>
 
-          {/* Location Summary */}
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className={`mt-1 rounded-full p-2 ${pickupLocation ? 'bg-accent/20' : 'bg-muted'}`}>
-                <MapPin className={`h-4 w-4 ${pickupLocation ? 'text-accent' : 'text-muted-foreground'}`} />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Pickup</p>
-                <p className="text-xs text-muted-foreground">
-                  {pickupLocation ? `${pickupLocation.lat.toFixed(4)}, ${pickupLocation.lng.toFixed(4)}` : 'Not set'}
-                </p>
-              </div>
+        {/* Sidebar Section */}
+        <div className="w-[400px] bg-card border-l border-border overflow-y-auto">
+          <div className="p-6 space-y-6">
+            {/* Header */}
+            <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Book Your Flight</h2>
+              <p className="text-muted-foreground">Skip the traffic, soar above Bengaluru</p>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className={`mt-1 rounded-full p-2 ${destination ? 'bg-accent/20' : 'bg-muted'}`}>
-                <Navigation className={`h-4 w-4 ${destination ? 'text-accent' : 'text-muted-foreground'}`} />
+            {/* Location Summary */}
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className={`mt-1 rounded-full p-2 ${pickupLocation ? 'bg-accent/20' : 'bg-muted'}`}>
+                  <MapPin className={`h-4 w-4 ${pickupLocation ? 'text-accent' : 'text-muted-foreground'}`} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">Pickup</p>
+                  <p className="text-xs text-muted-foreground">
+                    {pickupLocation ? `${pickupLocation.lat.toFixed(4)}, ${pickupLocation.lng.toFixed(4)}` : 'Not set'}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Destination</p>
-                <p className="text-xs text-muted-foreground">
-                  {destination ? `${destination.lat.toFixed(4)}, ${destination.lng.toFixed(4)}` : 'Not set'}
-                </p>
+
+              <div className="flex items-start gap-3">
+                <div className={`mt-1 rounded-full p-2 ${destination ? 'bg-accent/20' : 'bg-muted'}`}>
+                  <Navigation className={`h-4 w-4 ${destination ? 'text-accent' : 'text-muted-foreground'}`} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">Destination</p>
+                  <p className="text-xs text-muted-foreground">
+                    {destination ? `${destination.lat.toFixed(4)}, ${destination.lng.toFixed(4)}` : 'Not set'}
+                  </p>
+                </div>
               </div>
+
+              {distance > 0 && (
+                <div className="pt-2 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
+                    Distance: <span className="font-semibold text-foreground">{distance.toFixed(2)} km</span>
+                  </p>
+                </div>
+              )}
             </div>
 
-            {distance > 0 && (
-              <div className="pt-2 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  Distance: <span className="font-semibold text-foreground">{distance.toFixed(2)} km</span>
-                </p>
+            {/* Taxi Tiers */}
+            {(step === 'tier' || step === 'confirm') && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-foreground">Select Taxi Tier</h3>
+                {taxiTiers.map((tier) => (
+                  <TaxiTierCard
+                    key={tier.id}
+                    tier={tier}
+                    selected={selectedTier?.id === tier.id}
+                    onSelect={() => handleTierSelect(tier)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Fare Display and Confirm Button */}
+            {step === 'confirm' && selectedTier && (
+              <div className="space-y-4">
+                <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+                  <p className="text-sm text-muted-foreground mb-1">Total Fare</p>
+                  <p className="text-3xl font-bold text-accent">₹{fare}</p>
+                </div>
+
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={handleConfirmBooking}
+                >
+                  Confirm Booking
+                </Button>
               </div>
             )}
           </div>
-
-          {/* Taxi Tiers */}
-          {(step === 'tier' || step === 'confirm') && (
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-foreground">Select Taxi Tier</h3>
-              {taxiTiers.map((tier) => (
-                <TaxiTierCard
-                  key={tier.id}
-                  tier={tier}
-                  selected={selectedTier?.id === tier.id}
-                  onSelect={() => handleTierSelect(tier)}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Fare Display and Confirm Button */}
-          {step === 'confirm' && selectedTier && (
-            <div className="space-y-4">
-              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
-                <p className="text-sm text-muted-foreground mb-1">Total Fare</p>
-                <p className="text-3xl font-bold text-accent">₹{fare}</p>
-              </div>
-
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={handleConfirmBooking}
-              >
-                Confirm Booking
-              </Button>
-            </div>
-          )}
         </div>
       </div>
     </div>
