@@ -3,16 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Plane, MapPin, Clock, Shield } from 'lucide-react';
 import BookingInterface from '@/components/BookingInterface';
 import Navbar from '@/components/Navbar';
-
 const Index = () => {
   const [showBooking, setShowBooking] = useState(false);
-
   if (showBooking) {
     return <BookingInterface onBack={() => setShowBooking(false)} />;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Navigation */}
       <Navbar onBookNow={() => setShowBooking(true)} />
 
@@ -24,7 +20,7 @@ const Index = () => {
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-accent/20 backdrop-blur-sm text-accent-foreground px-4 py-2 rounded-full mb-6">
               <Plane className="h-4 w-4" />
-              <span className="text-sm font-medium">Future of Urban Mobility</span>
+              <span className="text-sm font-medium px-0 py-0">Future of Urban Mobility</span>
             </div>
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6">
@@ -38,11 +34,7 @@ const Index = () => {
               Fast, efficient, and hassle-free aerial travel.
             </p>
             
-            <Button
-              size="lg"
-              className="text-lg px-8 py-6 h-auto bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:shadow-xl transition-all"
-              onClick={() => setShowBooking(true)}
-            >
+            <Button size="lg" className="text-lg px-8 py-6 h-auto bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:shadow-xl transition-all" onClick={() => setShowBooking(true)}>
               Book Your Flight Now
             </Button>
           </div>
@@ -51,10 +43,7 @@ const Index = () => {
         {/* Wave Divider */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
-              fill="hsl(var(--background))"
-            />
+            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="hsl(var(--background))" />
           </svg>
         </div>
       </div>
@@ -119,20 +108,29 @@ const Index = () => {
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { step: '01', title: 'Select Locations', description: 'Choose pickup and destination points on the map' },
-              { step: '02', title: 'Choose Tier', description: 'Pick from Standard, Premium, or Luxury options' },
-              { step: '03', title: 'Confirm Fare', description: 'Review distance-based pricing and details' },
-              { step: '04', title: 'Fly Away', description: 'Your autonomous taxi arrives and takes you to your destination' },
-            ].map((item, index) => (
-              <div key={index} className="text-center">
+            {[{
+            step: '01',
+            title: 'Select Locations',
+            description: 'Choose pickup and destination points on the map'
+          }, {
+            step: '02',
+            title: 'Choose Tier',
+            description: 'Pick from Standard, Premium, or Luxury options'
+          }, {
+            step: '03',
+            title: 'Confirm Fare',
+            description: 'Review distance-based pricing and details'
+          }, {
+            step: '04',
+            title: 'Fly Away',
+            description: 'Your autonomous taxi arrives and takes you to your destination'
+          }].map((item, index) => <div key={index} className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 text-accent font-bold text-2xl mb-4">
                   {item.step}
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </div>
@@ -149,34 +147,35 @@ const Index = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {[
-            { name: 'Standard', base: '₹150', perKm: '₹25/km', features: ['2 passengers', 'Comfortable seating', 'Standard speed'] },
-            { name: 'Premium', base: '₹250', perKm: '₹35/km', features: ['3 passengers', 'Extra comfort', 'Priority routing'], highlighted: true },
-            { name: 'Luxury', base: '₹500', perKm: '₹50/km', features: ['4 passengers', 'First-class experience', 'Fastest routes'] },
-          ].map((tier, index) => (
-            <div
-              key={index}
-              className={`p-6 rounded-xl border ${
-                tier.highlighted
-                  ? 'border-accent bg-accent/5 shadow-lg scale-105'
-                  : 'border-border bg-card'
-              }`}
-            >
+          {[{
+          name: 'Standard',
+          base: '₹150',
+          perKm: '₹25/km',
+          features: ['2 passengers', 'Comfortable seating', 'Standard speed']
+        }, {
+          name: 'Premium',
+          base: '₹250',
+          perKm: '₹35/km',
+          features: ['3 passengers', 'Extra comfort', 'Priority routing'],
+          highlighted: true
+        }, {
+          name: 'Luxury',
+          base: '₹500',
+          perKm: '₹50/km',
+          features: ['4 passengers', 'First-class experience', 'Fastest routes']
+        }].map((tier, index) => <div key={index} className={`p-6 rounded-xl border ${tier.highlighted ? 'border-accent bg-accent/5 shadow-lg scale-105' : 'border-border bg-card'}`}>
               <h3 className="text-xl font-bold text-foreground mb-2">{tier.name}</h3>
               <div className="mb-4">
                 <div className="text-3xl font-bold text-accent">{tier.base}</div>
                 <div className="text-sm text-muted-foreground">base + {tier.perKm}</div>
               </div>
               <ul className="space-y-2">
-                {tier.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                {tier.features.map((feature, i) => <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     {feature}
-                  </li>
-                ))}
+                  </li>)}
               </ul>
-            </div>
-          ))}
+            </div>)}
         </div>
       </div>
 
@@ -189,17 +188,11 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Book your first flying taxi ride today and join the aerial revolution
           </p>
-          <Button
-            size="lg"
-            className="text-lg px-8 py-6 h-auto"
-            onClick={() => setShowBooking(true)}
-          >
+          <Button size="lg" className="text-lg px-8 py-6 h-auto" onClick={() => setShowBooking(true)}>
             Start Booking
           </Button>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
