@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plane, Menu, X } from 'lucide-react';
+import { Plane, Menu, X, LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface NavbarProps {
   onBookNow?: () => void;
@@ -10,13 +12,24 @@ interface NavbarProps {
 
 const Navbar = ({ onBookNow, showBooking = true }: NavbarProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+  
   const navItems = [
     { label: 'Home', href: '#home' },
     { label: 'Features', href: '#features' },
     { label: 'How It Works', href: '#how-it-works' },
     { label: 'Pricing', href: '#pricing' },
-    { label: 'My Bookings', href: '/bookings' },
+    ...(user ? [{ label: 'My Bookings', href: '/bookings' }] : []),
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: 'Signed out',
+      description: 'You have been signed out successfully',
+    });
+  };
 
   const scrollToSection = (href: string) => {
     if (href.startsWith('#')) {
@@ -63,13 +76,26 @@ const Navbar = ({ onBookNow, showBooking = true }: NavbarProps) => {
           </div>
 
           {/* Desktop CTA */}
-          {showBooking && (
-            <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
+            {showBooking && (
               <Button onClick={onBookNow} className="bg-accent hover:bg-accent/90 text-accent-foreground">
                 Book Now
               </Button>
-            </div>
-          )}
+            )}
+            {user ? (
+              <Button variant="ghost" onClick={handleSignOut} className="gap-2">
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            ) : (
+              <Button variant="ghost" asChild>
+                <Link to="/auth">
+                  <User className="h-4 w-4 mr-2" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-muted">
@@ -100,6 +126,19 @@ const Navbar = ({ onBookNow, showBooking = true }: NavbarProps) => {
             {showBooking && (
               <Button onClick={onBookNow} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
                 Book Now
+              </Button>
+            )}
+            {user ? (
+              <Button variant="ghost" onClick={handleSignOut} className="w-full justify-start gap-2">
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            ) : (
+              <Button variant="ghost" asChild className="w-full justify-start">
+                <Link to="/auth">
+                  <User className="h-4 w-4 mr-2" />
+                  Sign In
+                </Link>
               </Button>
             )}
           </div>

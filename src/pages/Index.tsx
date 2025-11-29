@@ -1,16 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Plane, MapPin, Clock, Shield } from 'lucide-react';
 import BookingInterface from '@/components/BookingInterface';
 import Navbar from '@/components/Navbar';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 const Index = () => {
   const [showBooking, setShowBooking] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user && showBooking) {
+      // User is logged in, allow booking
+    }
+  }, [user, showBooking]);
+
+  const handleBookNow = () => {
+    if (!user) {
+      toast({
+        title: 'Sign in required',
+        description: 'Please sign in to book a flying taxi',
+      });
+      navigate('/auth');
+      return;
+    }
+    setShowBooking(true);
+  };
+
   if (showBooking) {
     return <BookingInterface onBack={() => setShowBooking(false)} />;
   }
   return <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <Navbar onBookNow={() => setShowBooking(true)} />
+      <Navbar onBookNow={handleBookNow} />
 
       {/* Hero Section */}
       <div id="home" className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-accent">
@@ -34,7 +59,7 @@ const Index = () => {
               Fast, efficient, and hassle-free aerial travel.
             </p>
             
-            <Button size="lg" className="text-lg px-8 py-6 h-auto bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:shadow-xl transition-all" onClick={() => setShowBooking(true)}>
+            <Button size="lg" className="text-lg px-8 py-6 h-auto bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:shadow-xl transition-all" onClick={handleBookNow}>
               Book Your Flight Now
             </Button>
           </div>
@@ -188,7 +213,7 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Book your first flying taxi ride today and join the aerial revolution
           </p>
-          <Button size="lg" className="text-lg px-8 py-6 h-auto" onClick={() => setShowBooking(true)}>
+          <Button size="lg" className="text-lg px-8 py-6 h-auto" onClick={handleBookNow}>
             Start Booking
           </Button>
         </div>
