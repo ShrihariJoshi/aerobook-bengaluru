@@ -1,40 +1,35 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 interface NavbarProps {
   onBookNow?: () => void;
   showBooking?: boolean;
 }
-const Navbar = ({
-  onBookNow,
-  showBooking = true
-}: NavbarProps) => {
+
+const Navbar = ({ onBookNow, showBooking = true }: NavbarProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navItems = [{
-    label: 'Home',
-    href: '#home'
-  }, {
-    label: 'Features',
-    href: '#features'
-  }, {
-    label: 'How It Works',
-    href: '#how-it-works'
-  }, {
-    label: 'Pricing',
-    href: '#pricing'
-  }];
+  const navItems = [
+    { label: 'Home', href: '#home' },
+    { label: 'Features', href: '#features' },
+    { label: 'How It Works', href: '#how-it-works' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'My Bookings', href: '/bookings' },
+  ];
+
   const scrollToSection = (href: string) => {
     if (href.startsWith('#')) {
       const element = document.querySelector(href);
       if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth'
-        });
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     }
     setMobileMenuOpen(false);
   };
-  return <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+
+  return (
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -50,17 +45,31 @@ const Navbar = ({
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navItems.map(item => <button key={item.label} onClick={() => scrollToSection(item.href)} className="text-sm font-medium text-foreground hover:text-accent transition-colors">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                onClick={(e) => {
+                  if (item.href.startsWith('#')) {
+                    e.preventDefault();
+                    scrollToSection(item.href);
+                  }
+                }}
+                className="text-sm font-medium text-foreground hover:text-accent transition-colors"
+              >
                 {item.label}
-              </button>)}
+              </Link>
+            ))}
           </div>
 
           {/* Desktop CTA */}
-          {showBooking && <div className="hidden md:block">
+          {showBooking && (
+            <div className="hidden md:block">
               <Button onClick={onBookNow} className="bg-accent hover:bg-accent/90 text-accent-foreground">
                 Book Now
               </Button>
-            </div>}
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-muted">
@@ -70,16 +79,34 @@ const Navbar = ({
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && <div className="md:hidden border-t border-border bg-background">
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border bg-background">
           <div className="px-4 py-4 space-y-3">
-            {navItems.map(item => <button key={item.label} onClick={() => scrollToSection(item.href)} className="block w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                onClick={(e) => {
+                  if (item.href.startsWith('#')) {
+                    e.preventDefault();
+                    scrollToSection(item.href);
+                  }
+                }}
+                className="block w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+              >
                 {item.label}
-              </button>)}
-            {showBooking && <Button onClick={onBookNow} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+              </Link>
+            ))}
+            {showBooking && (
+              <Button onClick={onBookNow} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
                 Book Now
-              </Button>}
+              </Button>
+            )}
           </div>
-        </div>}
-    </nav>;
+        </div>
+      )}
+    </nav>
+  );
 };
+
 export default Navbar;
