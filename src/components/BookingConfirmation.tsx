@@ -2,6 +2,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, MapPin, Navigation, Plane, Clock } from 'lucide-react';
 import { LatLng } from 'leaflet';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 interface TaxiTier {
   id: string;
@@ -30,6 +34,37 @@ const BookingConfirmation = ({
   onNewBooking,
 }: BookingConfirmationProps) => {
   const estimatedTime = Math.round((distance / 100) * 60); // Rough estimate: 100km/h average
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const saveBooking = async () => {
+      if (!user) return;
+
+      try {
+        const { error } = await supabase.from('bookings').insert({
+          user_id: user.id,
+          pickup_lat: pickup.lat,
+          pickup_lng: pickup.lng,
+          destination_lat: destination.lat,
+          destination_lng: destination.lng,
+          taxi_tier: tier.name,
+          fare,
+          distance,
+        });
+
+        if (error) throw error;
+      } catch (error: any) {
+        toast({
+          title: 'Error',
+          description: 'Failed to save booking',
+          variant: 'destructive',
+        });
+      }
+    };
+
+    saveBooking();
+  }, [user, pickup, destination, tier, fare, distance, toast]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
